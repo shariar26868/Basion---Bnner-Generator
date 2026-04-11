@@ -139,7 +139,7 @@ async def regenerate_banner(
 
      ### cURL
      ```bash
-     curl -N -X POST http://localhost:8800/regenerate \\
+     curl -N -X POST http://206.162.244.134:8800/regenerate \\
           -F 'banner_image=@selected.png' \\
           -F 'prompt=Change background to starry night sky, keep all text unchanged'
      ```
