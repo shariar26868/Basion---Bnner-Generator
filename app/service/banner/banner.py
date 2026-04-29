@@ -243,6 +243,50 @@ _OCCASION_META: dict[str, dict] = {
 }
 
 _STYLE_DIRECTIVE: dict[str, str] = {
+     # "3d_illustration": (
+          # "Full 3-D rendered illustration style. Soft volumetric lighting, subsurface scattering on "
+          # "rounded objects, gentle drop-shadows, depth-of-field blur on background elements. "
+          # "Characters and props have a polished clay or smooth-plastic look (think Pixar / Blender render)."
+     # ),
+     # "pixel_art": (
+          # "Retro pixel-art style. Crisp, hard-edged pixels — no anti-aliasing or blur. "
+          # "Limited colour palette (16–64 colours). 8-bit or 16-bit game aesthetic."
+     # ),
+     # "minimalistic": (
+          # "Pure minimalist design. At most 2–3 colours. One dominant visual element, no clutter. "
+          # "Ultra-thin lines or simple geometric shapes only."
+     # ),
+     # "cartoon": (
+          # "Bold cartoon illustration style. Strong black outlines (2–4 px), flat or cel-shaded fills, "
+          # "exaggerated proportions, expressive faces. Bright, punchy colours. "
+          # "Think Saturday-morning cartoon or comic-strip aesthetic."
+     # ),
+     # "realistic": (
+          # "Photorealistic style. Studio-quality lighting, accurate shadows and reflections, "
+          # "hyper-detailed textures. Virtual 50 mm prime lens — shallow depth of field."
+     # ),
+     # "surreal": (
+          # "Dreamlike surrealist style. Impossible physics: objects float, melt, morph. "
+          # "Juxtapose unrelated items in unexpected scales. Hyper-detailed rendering."
+     # ),
+     # "2d": (
+          # "Classic 2-D hand-drawn animation style. Clean ink lines. "
+          # "Colour fills with minimal shading. Think 1990s Disney or Studio Ghibli."
+     # ),
+     # "flat_design": (
+          # "Modern flat design. Zero gradients, zero shadows, zero textures. "
+          # "Solid colour blocks only. Icons built from geometric primitives."
+     # ),
+     # "elegant":        "Refined and sophisticated. Smooth gradients, serif or script typography, generous whitespace.",
+     # "playful":        "Fun and whimsical. Rounded shapes, bright colours, hand-drawn feel, cheerful lettering.",
+     # "bold_modern":    "Strong geometric shapes, high contrast, bold sans-serif type, dynamic asymmetric composition.",
+     # "vintage_retro":  "Worn texture overlays, muted palette, retro badge shapes, distressed lettering.",
+     # "watercolor":     "Soft watercolour washes, organic bleed edges, painterly background, delicate brush strokes.",
+     # "neon_glow":      "Dark background, vibrant neon light effects, glowing colour halos, cyberpunk energy.",
+     # "rustic_natural": "Wood-grain texture, earthy tones, hand-lettered feel, botanical illustration accents.",
+     # "luxury_gold":    "Deep rich backgrounds (black/navy/emerald), lavish gold foil textures, premium typography.",
+     # "dark_dramatic":  "Dark moody palette, cinematic lighting, dramatic shadows, intense theatrical atmosphere.",
+
      "3d_illustration": (
           "Full 3-D rendered illustration style. Soft volumetric lighting, subsurface scattering on "
           "rounded objects, gentle drop-shadows, depth-of-field blur on background elements. "
@@ -277,15 +321,54 @@ _STYLE_DIRECTIVE: dict[str, str] = {
           "Modern flat design. Zero gradients, zero shadows, zero textures. "
           "Solid colour blocks only. Icons built from geometric primitives."
      ),
-     "elegant":        "Refined and sophisticated. Smooth gradients, serif or script typography, generous whitespace.",
-     "playful":        "Fun and whimsical. Rounded shapes, bright colours, hand-drawn feel, cheerful lettering.",
-     "bold_modern":    "Strong geometric shapes, high contrast, bold sans-serif type, dynamic asymmetric composition.",
-     "vintage_retro":  "Worn texture overlays, muted palette, retro badge shapes, distressed lettering.",
-     "watercolor":     "Soft watercolour washes, organic bleed edges, painterly background, delicate brush strokes.",
-     "neon_glow":      "Dark background, vibrant neon light effects, glowing colour halos, cyberpunk energy.",
-     "rustic_natural": "Wood-grain texture, earthy tones, hand-lettered feel, botanical illustration accents.",
-     "luxury_gold":    "Deep rich backgrounds (black/navy/emerald), lavish gold foil textures, premium typography.",
-     "dark_dramatic":  "Dark moody palette, cinematic lighting, dramatic shadows, intense theatrical atmosphere.",
+     "elegant": (
+          "Refined and sophisticated style. Smooth gradients, elegant serif or script typography, "
+          "and generous whitespace for a premium, polished feel."
+     ),
+     "playful": (
+          "Fun and whimsical style. Rounded shapes, bright colours, hand-drawn elements, "
+          "and cheerful, lively lettering."
+     ),
+     "bold_modern": (
+          "Bold modern style. Strong geometric shapes, high contrast, bold sans-serif typography, "
+          "and dynamic asymmetric compositions."
+     ),
+     "vintage_retro": (
+          "Vintage retro style. Worn texture overlays, muted colour palette, retro badge layouts, "
+          "and distressed typography."
+     ),
+     "watercolor": (
+          "Watercolour style. Soft washes, organic bleed edges, painterly textures, "
+          "and delicate brush strokes."
+     ),
+     "neon_glow": (
+          "Neon glow style. Dark backgrounds with vibrant neon lighting, glowing colour halos, "
+          "and a cyberpunk-inspired aesthetic."
+     ),
+     "rustic_natural": (
+          "Rustic natural style. Wood-grain textures, earthy tones, hand-lettered typography, "
+          "and botanical illustration accents."
+     ),
+     "luxury_gold": (
+          "Luxury gold style. Deep rich backgrounds (black, navy, emerald), premium typography, "
+          "and lavish gold foil or metallic accents."
+     ),
+     "dark_dramatic": (
+          "Dark dramatic style. Moody colour palette, cinematic lighting, strong shadows, "
+          "and an intense, theatrical atmosphere."
+     ),
+     "abstract": (
+          "Abstract art style. Non-representational forms, flowing shapes, layered compositions, and bold or experimental colours. "
+          "Focus on visual expression rather than realism."
+     ),
+     "polaroid_art": (
+          "Polaroid photo style. Instant film look with white borders, slight colour fading, light leaks, and subtle grain. "
+          "Feels nostalgic and candid."
+     ),
+     "sunset": (
+          "Sunset-inspired style. Warm glowing light, orange–pink–purple gradients, soft silhouettes, and dreamy horizon tones. "
+          "Calm and romantic mood."
+     ),
 }
 
 _VARIANT_ARCHETYPES = [

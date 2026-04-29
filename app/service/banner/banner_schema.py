@@ -39,6 +39,9 @@ class VisualStyle(str, Enum):
      rustic_natural       = "rustic_natural"
      luxury_gold          = "luxury_gold"
      dark_dramatic        = "dark_dramatic"
+     sunset               =  "sunset"
+     polaroid_art         = "polaroid_art"
+     abstract             = "abstract"
 
 
 # ─── Pydantic models ──────────────────────────────────────────────────────────
