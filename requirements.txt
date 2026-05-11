@@ -5,3 +5,4 @@ pillow
 python-dotenv
 python-multipart
 pydantic
+boto3
