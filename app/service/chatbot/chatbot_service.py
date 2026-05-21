@@ -13,8 +13,7 @@ from app.service.chatbot.chatbot_schema import (
     ChatRequest, 
     ChatResponse, 
     ChatMessage, 
-    ChatMessageRole,
-    ChatHistoryItem
+    ChatMessageRole
 )
 from app.service.chatbot.chatbot_utils import get_documentation_context
 
@@ -44,7 +43,7 @@ class ChatbotService:
             System prompt string
         """
         return f"""You are a helpful AI assistant for the Basione website platform. 
-Your role is to provide accurate, detailed answers about the platform based on official documentation.
+Your role is to provide accurate, detailed, and visually well-structured answers about the platform based on official documentation.
 
 You have access to the following platform documentation:
 
@@ -52,16 +51,25 @@ You have access to the following platform documentation:
 {documentation_context}
 </documentation>
 
-Guidelines:
-1. Answer questions specifically about the Basione platform (frontend, backend, features, technology stack)
-2. Base your answers only on the provided documentation
-3. If information is not in the documentation, clearly state that
-4. Be friendly, professional, and concise
-5. For technical questions, provide code examples when relevant
-6. Always mention which sections of the documentation support your answer
-7. If a question is unclear, ask for clarification
+Content Formatting Rules (FOLLOW THESE STRICTLY):
+1. Start with a brief 1-2 sentence overview of the answer.
+2. Use HTML-like tags to structure content — do NOT use plain Markdown.
+3. Wrap ALL headings (section titles) in <h4> tags.
+4. Wrap ALL feature/sub-feature names in <b> tags.
+5. Use blockquotes ("> ...") for brief highlights or definitions, prefixed with a checkmark emoji.
+6. Use emojis like ✅, 🔑, 📦, 🔗, 💡, ⭐ as inline highlights.
+7. Include code snippets inside <pre><code> blocks when relevant. Only include the 5-6 most important lines.
+8. When listing features or files, use dashes or simple bullet format with emojis.
+9. End with a 1-sentence tip or best practice when relevant.
 
-Remember: You are an expert about this specific platform, not a general AI assistant."""
+Example Answer Style:
+<h4>Authentication System</h4>
+Sign-in, sign-up, password reset, and OTP verification flows.
+Located under <b>basione-client/app/auth/</b>.
+
+> ✅ Includes email OTP and password recovery.
+
+Remember: Be friendly, professional, and concise. Base your answers ONLY on the provided documentation. If information is not in the documentation, clearly state that."""
 
     async def ask_question(self, request: ChatRequest) -> ChatResponse:
         """Process a user question and generate response
@@ -89,14 +97,6 @@ Remember: You are an expert about this specific platform, not a general AI assis
             # Build messages for API call
             messages = []
             
-            # Add conversation history if provided
-            if request.conversation_history:
-                for msg in request.conversation_history:
-                    messages.append({
-                        "role": msg.role.value,
-                        "content": msg.content
-                    })
-            
             # Add current question
             messages.append({
                 "role": "user",
@@ -113,8 +113,8 @@ Remember: You are an expert about this specific platform, not a general AI assis
                     },
                     *messages
                 ],
-                temperature=request.temperature,
-                max_tokens=request.max_tokens,
+                temperature=0.7,
+                max_tokens=1000,
                 top_p=0.9
             )
             
@@ -167,13 +167,6 @@ Remember: You are an expert about this specific platform, not a general AI assis
             # Build messages
             messages = []
             
-            if request.conversation_history:
-                for msg in request.conversation_history:
-                    messages.append({
-                        "role": msg.role.value,
-                        "content": msg.content
-                    })
-            
             messages.append({
                 "role": "user",
                 "content": request.question
@@ -189,8 +182,8 @@ Remember: You are an expert about this specific platform, not a general AI assis
                     },
                     *messages
                 ],
-                temperature=request.temperature,
-                max_tokens=request.max_tokens,
+                temperature=0.7,
+                max_tokens=1000,
                 stream=True
             ) as stream:
                 # Send metadata first
@@ -228,12 +221,6 @@ Remember: You are an expert about this specific platform, not a general AI assis
             answer: Assistant's answer
             sources: Relevant documentation sources
         """
-        item = ChatHistoryItem(
-            question=question,
-            answer=answer,
-            timestamp=datetime.now().isoformat(),
-            sources=sources
-        )
         # Can extend to store in database
         logger.info(f"Conversation added to history: {question[:50]}...")
 
