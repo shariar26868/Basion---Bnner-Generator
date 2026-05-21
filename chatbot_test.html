@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basione Chatbot - Interactive Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            max-height: 800px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.assistant {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-bubble {
+            background: #e9ecef;
+            color: #2c3e50;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.assistant .metadata {
+            font-size: 12px;
+            color: #666;
+            margin-top: 6px;
+            padding: 0 12px;
+        }
+
+        .metadata-item {
+            display: inline-block;
+            margin-right: 15px;
+        }
+
+        .metadata-item strong {
+            color: #667eea;
+        }
+
+        .loading {
+            display: flex;
+            gap: 4px;
+            padding: 10px 16px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: bounce 1.4s infinite;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        input[type="text"],
+        input[type="range"],
+        input[type="number"] {
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="range"] {
+            width: 80px;
+        }
+
+        input[type="number"] {
+            width: 60px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #ddd;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .status {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .quick-questions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #ddd;
+        }
+
+        .quick-btn {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            color: #666;
+        }
+
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .message-bubble {
+                max-width: 100%;
+            }
+
+            .input-group {
+                min-width: 100%;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Basione Chatbot</h1>
+            <p>Ask anything about the Basione platform</p>
+        </div>
+
+        <div class="chat-container" id="chatContainer"></div>
+
+        <div class="quick-questions" id="quickQuestions"></div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>🌡️ Temperature:</label>
+                <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
+                <span id="tempValue">0.7</span>
+            </div>
+            <div class="control-group">
+                <label>📊 Max Tokens:</label>
+                <input type="number" id="maxTokens" min="100" max="2000" value="500">
+            </div>
+            <div style="margin-left: auto;">
+                <span id="status" class="status" style="display:none;"></span>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="questionInput" 
+                    placeholder="Ask about the website, features, setup, technology..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button onclick="askQuestion()">Send</button>
+                <button onclick="toggleStream();" id="streamBtn">Stream</button>
+                <button onclick="clearChat()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000/api/chatbot";
+        const QUESTIONS = [
+            "What are the main features?",
+            "How do I install?",
+            "What's the tech stack?",
+            "How does authentication work?",
+            "What is the banner editor?"
+        ];
+
+        let useStreaming = false;
+
+        // Initialize quick questions
+        function initQuickQuestions() {
+            const container = document.getElementById("quickQuestions");
+            QUESTIONS.forEach(q => {
+                const btn = document.createElement("button");
+                btn.className = "quick-btn";
+                btn.textContent = q;
+                btn.onclick = () => {
+                    document.getElementById("questionInput").value = q;
+                    askQuestion();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // Temperature slider
+        document.getElementById("temperature").addEventListener("input", (e) => {
+            document.getElementById("tempValue").textContent = e.target.value;
+        });
+
+        // Handle Enter key
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                askQuestion();
+            }
+        }
+
+        // Toggle streaming
+        function toggleStream() {
+            useStreaming = !useStreaming;
+            document.getElementById("streamBtn").textContent = useStreaming ? "📡 Stream ON" : "Stream";
+            showStatus(useStreaming ? "Streaming mode enabled" : "Streaming mode disabled", "info");
+        }
+
+        // Show status
+        function showStatus(message, type) {
+            const status = document.getElementById("status");
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = "block";
+        }
+
+        // Add message to chat
+        function addMessage(text, isUser, metadata = null) {
+            const container = document.getElementById("chatContainer");
+            const message = document.createElement("div");
+            message.className = `message ${isUser ? "user" : "assistant"}`;
+
+            const bubble = document.createElement("div");
+            bubble.className = "message-bubble";
+            bubble.textContent = text;
+            message.appendChild(bubble);
+
+            if (metadata && !isUser) {
+                const meta = document.createElement("div");
+                meta.className = "metadata";
+                meta.innerHTML = `
+                    <div class="metadata-item"><strong>Sources:</strong> ${metadata.sources || "General"}</div>
+                    <div class="metadata-item"><strong>Confidence:</strong> ${(metadata.confidence * 100).toFixed(0)}%</div>
+                `;
+                message.appendChild(meta);
+            }
+
+            container.appendChild(message);
+            container.scrollTop = container.scrollHeight;
+            return message;
+        }
+
+        // Show loading
+        function showLoading() {
+            const container = document.getElementById("chatContainer");
+            const loading = document.createElement("div");
+            loading.className = "message assistant";
+            loading.id = "loading";
+            loading.innerHTML = '<div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>';
+            container.appendChild(loading);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Remove loading
+        function removeLoading() {
+            const loading = document.getElementById("loading");
+            if (loading) loading.remove();
+        }
+
+        // Ask question
+        async function askQuestion() {
+            const input = document.getElementById("questionInput");
+            const question = input.value.trim();
+
+            if (!question) {
+                showStatus("Please enter a question", "error");
+                return;
+            }
+
+            addMessage(question, true);
+            input.value = "";
+
+            showLoading();
+
+            try {
+                if (useStreaming) {
+                    await askStreaming(question);
+                } else {
+                    await askNormal(question);
+                }
+            } catch (error) {
+                removeLoading();
+                showStatus(`Error: ${error.message}`, "error");
+                addMessage(`Error: ${error.message}`, false);
+            }
+        }
+
+        // Normal request
+        async function askNormal(question) {
+            const response = await fetch(`${API_BASE}/ask`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    question,
+                    temperature: parseFloat(document.getElementById("temperature").value),
+                    max_tokens: parseInt(document.getElementById("maxTokens").value)
+                })
+            });
+
+            if (!response.ok) throw new Error("API request failed");
+
+            removeLoading();
+            const data = await response.json();
+            addMessage(data.answer, false, {
+                sources: data.sources.join(", ") || "General",
+                confidence: data.confidence
+            });
+            showStatus("Answer received successfully", "success");
+        }
+
+        // Streaming request
+        async function askStreaming(question) {
+            const response = await fetch(`${API_BASE}/ask/stream`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    question,
+                    temperature: parseFloat(document.getElementById("temperature").value),
+                    max_tokens: parseInt(document.getElementById("maxTokens").value)
+                })
+            });
+
+            if (!response.ok) throw new Error("Streaming request failed");
+
+            removeLoading();
+
+            let fullAnswer = "";
+            let metadata = {};
+            let messageElement = null;
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const text = decoder.decode(value);
+                const lines = text.split("\n");
+
+                for (const line of lines) {
+                    if (line.startsWith("data: ")) {
+                        try {
+                            const json = JSON.parse(line.slice(6));
+
+                            if (json.type === "metadata") {
+                                metadata.sources = json.sources.join(", ") || "General";
+                            } else if (json.type === "content") {
+                                fullAnswer += json.data;
+
+                                if (!messageElement) {
+                                    messageElement = addMessage(fullAnswer, false, metadata);
+                                } else {
+                                    messageElement.querySelector(".message-bubble").textContent = fullAnswer;
+                                }
+
+                                document.getElementById("chatContainer").scrollTop = document.getElementById("chatContainer").scrollHeight;
+                            } else if (json.type === "done") {
+                                metadata.confidence = json.confidence;
+                                if (messageElement) {
+                                    const meta = document.createElement("div");
+                                    meta.className = "metadata";
+                                    meta.innerHTML = `
+                                        <div class="metadata-item"><strong>Sources:</strong> ${metadata.sources}</div>
+                                        <div class="metadata-item"><strong>Confidence:</strong> ${(metadata.confidence * 100).toFixed(0)}%</div>
+                                    `;
+                                    messageElement.appendChild(meta);
+                                }
+                            }
+                        } catch (e) {
+                            console.log("Parse error:", e);
+                        }
+                    }
+                }
+            }
+
+            showStatus("Streamed answer received", "success");
+        }
+
+        // Clear chat
+        function clearChat() {
+            document.getElementById("chatContainer").innerHTML = "";
+            showStatus("Chat cleared", "info");
+        }
+
+        // Initialize
+        initQuickQuestions();
+        showStatus("Ready to answer questions 🚀", "info");
+        document.getElementById("questionInput").focus();
+    </script>
+</body>
+</html>

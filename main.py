@@ -148,6 +148,8 @@ from app.service.banner.banner_utilits import (
         _periodic_cleanup,
         log,
 )
+from app.service.chatbot.chatbot_router import router as chatbot_router
+from app.service.chatbot.chatbot_utils import get_documentation_loader
 
 # ─── FastAPI App ──────────────────────────────────────────────────────────────
 
@@ -173,6 +175,7 @@ App.add_middleware(
 # ✅ Replaced with explicit route below that sets headers on every response
 
 App.include_router(banner_router)
+App.include_router(chatbot_router)
 
 
 # ─── Image Serving (CORS-safe) ────────────────────────────────────────────────
@@ -203,6 +206,16 @@ async def serve_image(filename: str):
 async def startup_event() -> None:
     cleanup_old_images()
     asyncio.create_task(_periodic_cleanup())
+    
+    # Load chatbot documentation on startup
+    doc_loader = get_documentation_loader()
+    doc_loader.load_documentation()
+    log.info(
+        "Chatbot documentation loaded | sections=%d | chars=%d",
+        len(doc_loader.sections),
+        len(doc_loader.raw_content),
+    )
+    
     log.info(
         "v5 started | model=%s | base_url=%s | images_dir=%s",
         IMAGE_MODEL, BASE_URL, IMAGES_DIR,
