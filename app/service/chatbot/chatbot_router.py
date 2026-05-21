@@ -33,27 +33,36 @@ router = APIRouter(
     summary="Ask a question about the website",
     description="Submit a question and get an AI-powered answer based on platform documentation"
 )
-async def ask_question(request: ChatRequest) -> ChatResponse:
+async def ask_question(request: ChatRequest | str) -> ChatResponse:
     """
     Ask a question about the Basione website/platform.
     
-    The chatbot has access to:
-    - Frontend (Next.js) documentation
-    - Backend (FastAPI) documentation  
-    - AI features and capabilities
-    - Technology stack information
-    - Installation and setup guides
+    **Simple Usage:** Send just a string question
+    ```
+    POST /api/chatbot/ask
+    "What are the main features?"
+    ```
     
-    **Example questions:**
-    - "What technologies does the Basione client use?"
-    - "How do I set up the project locally?"
-    - "What are the main features of the banner editor?"
-    - "How does the AI banner generation work?"
-    - "What payment methods are supported?"
+    **Or send full request object:**
+    ```json
+    {
+      "question": "What are the main features?",
+      "temperature": 0.7,
+      "max_tokens": 500
+    }
+    ```
     """
     try:
+        # Handle both string and ChatRequest inputs
+        if isinstance(request, str):
+            # If just a string was sent, convert it to ChatRequest
+            question_text = request
+            chat_request = ChatRequest(question=question_text)
+        else:
+            chat_request = request
+        
         service = get_chatbot_service()
-        response = await service.ask_question(request)
+        response = await service.ask_question(chat_request)
         
         # Add to history for potential future use
         service.add_to_history(

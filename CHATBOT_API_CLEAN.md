@@ -180,137 +180,12 @@ Check if chatbot service is operational.
 
 ---
 
-## 💻 JavaScript/TypeScript Client Example
+## 🐍 Python Client Examples
 
 ### Basic Usage
 
-```javascript
-// Simple question with fetch
-async function askChatbot(question) {
-  const response = await fetch('http://localhost:8000/api/chatbot/ask', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      question: question,
-      temperature: 0.7,
-      max_tokens: 500
-    })
-  });
-  
-  const data = await response.json();
-  console.log('Answer:', data.answer);
-  console.log('Sources:', data.sources);
-  console.log('Confidence:', data.confidence);
-}
-
-// Usage
-await askChatbot("What are the key features of Basione?");
-```
-
-### Streaming Response
-
-```javascript
-async function askChatbotStreaming(question) {
-  const response = await fetch('http://localhost:8000/api/chatbot/ask/stream', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ question })
-  });
-  
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    
-    const text = decoder.decode(value);
-    const lines = text.split('\n');
-    
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const json = JSON.parse(line.slice(6));
-        
-        if (json.type === 'content') {
-          process.stdout.write(json.data);
-        } else if (json.type === 'done') {
-          console.log('\n[Confidence:', json.confidence, ']');
-        }
-      }
-    }
-  }
-}
-
-// Usage
-await askChatbotStreaming("How do I install the project?");
-```
-
-### React Hook
-
-```javascript
-import { useState, useCallback } from 'react';
-
-export function useChatbot() {
-  const [answer, setAnswer] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sources, setSources] = useState([]);
-  const [error, setError] = useState(null);
-  
-  const askQuestion = useCallback(async (question) => {
-    setLoading(true);
-    setError(null);
-    setAnswer('');
-    
-    try {
-      const response = await fetch('/api/chatbot/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, max_tokens: 800 })
-      });
-      
-      if (!response.ok) throw new Error('Network response was not ok');
-      
-      const data = await response.json();
-      setAnswer(data.answer);
-      setSources(data.sources);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-  
-  return { answer, loading, sources, error, askQuestion };
-}
-
-// Usage in component
-function ChatWidget() {
-  const { answer, loading, askQuestion } = useChatbot();
-  const [input, setInput] = useState('');
-  
-  return (
-    <div>
-      <input 
-        value={input} 
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask about the platform..."
-      />
-      <button onClick={() => askQuestion(input)} disabled={loading}>
-        {loading ? 'Thinking...' : 'Ask'}
-      </button>
-      {answer && <div className="answer">{answer}</div>}
-    </div>
-  );
-}
-```
-
----
-
-## 🐍 Python Client Example
-
 ```python
 import requests
-import json
 
 BASE_URL = "http://localhost:8000/api/chatbot"
 
@@ -331,10 +206,20 @@ def ask_chatbot(question: str):
     print(f"Confidence: {data['confidence']}")
     return data
 
+# Usage
+ask_chatbot("What are the main technologies used?")
+```
+
+### Streaming Response
+
+```python
+import json
+import requests
+
 def stream_answer(question: str):
     """Stream answer in real-time"""
     response = requests.post(
-        f"{BASE_URL}/ask/stream",
+        f"http://localhost:8000/api/chatbot/ask/stream",
         json={"question": question},
         stream=True
     )
@@ -347,10 +232,19 @@ def stream_answer(question: str):
             elif data['type'] == 'done':
                 print(f"\n[Confidence: {data['confidence']}]")
 
+# Usage
+stream_answer("How do I get started?")
+```
+
+### Search Documentation
+
+```python
+import requests
+
 def search_docs(query: str):
     """Search documentation"""
     response = requests.get(
-        f"{BASE_URL}/documentation/search",
+        "http://localhost:8000/api/chatbot/documentation/search",
         params={"query": query}
     )
     
@@ -360,17 +254,69 @@ def search_docs(query: str):
     return data
 
 # Usage
-if __name__ == "__main__":
-    ask_chatbot("What are the main technologies used?")
-    stream_answer("How do I get started?")
-    search_docs("authentication")
+search_docs("authentication")
+```
+
+### Multi-turn Conversation
+
+```python
+import requests
+
+def ask_with_history(question: str, history: list):
+    """Ask question with conversation history"""
+    response = requests.post(
+        "http://localhost:8000/api/chatbot/ask",
+        json={
+            "question": question,
+            "conversation_history": history,
+            "temperature": 0.7,
+            "max_tokens": 500
+        }
+    )
+    
+    data = response.json()
+    print(f"Answer: {data['answer']}")
+    return data
+
+# Usage
+history = [
+    {"role": "user", "content": "What is Basione?"},
+    {"role": "assistant", "content": "Basione is an AI-powered banner design platform..."}
+]
+
+ask_with_history("Tell me more about the features", history)
+```
+
+### Using cURL
+
+```bash
+# Simple question
+curl -X POST http://localhost:8000/api/chatbot/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What is Basione?"}'
+
+# With options
+curl -X POST http://localhost:8000/api/chatbot/ask \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "How do I install?",
+    "temperature": 0.5,
+    "max_tokens": 300
+  }'
+
+# Get documentation summary
+curl http://localhost:8000/api/chatbot/documentation/summary
+
+# Search docs
+curl "http://localhost:8000/api/chatbot/documentation/search?query=authentication"
+
+# Health check
+curl http://localhost:8000/api/chatbot/health
 ```
 
 ---
 
-## � Frontend Integration
-
-Your Next.js frontend can use the API endpoints directly. See the `chatbot_test.html` for an example web interface.
+## 🔧 Installation & Setup
 
 ### Prerequisites
 ```bash
@@ -429,19 +375,13 @@ Return Response (or Stream)
 
 ### Multi-turn Conversations
 
-```json
-{
-  "question": "Tell me more about the pricing",
-  "conversation_history": [
-    {
-      "role": "user",
-      "content": "What features does Basione have?"
-    },
-    {
-      "role": "assistant",
-      "content": "Basione has advanced banner editor, AI generation..."
-    }
-  ]
+```python
+request = {
+    "question": "Tell me more about the pricing",
+    "conversation_history": [
+        {"role": "user", "content": "What features does Basione have?"},
+        {"role": "assistant", "content": "Basione has advanced banner editor, AI generation..."}
+    ]
 }
 ```
 

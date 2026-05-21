@@ -153,7 +153,7 @@ from app.service.chatbot.chatbot_utils import get_documentation_loader
 
 # ─── FastAPI App ──────────────────────────────────────────────────────────────
 
-App = FastAPI(
+app = FastAPI(
     title="Banner Maker API",
     version="5.0.0",
     description=(
@@ -163,7 +163,7 @@ App = FastAPI(
     ),
 )
 
-App.add_middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
@@ -171,16 +171,41 @@ App.add_middleware(
     allow_headers=["*"],
 )
 
-# ❌ Removed: App.mount("/images", ...) — StaticFiles bypasses CORS middleware
+# ❌ Removed: app.mount("/images", ...) — StaticFiles bypasses CORS middleware
 # ✅ Replaced with explicit route below that sets headers on every response
 
-App.include_router(banner_router)
-App.include_router(chatbot_router)
+app.include_router(banner_router)
+app.include_router(chatbot_router)
+
+
+# ─── Root Endpoint ────────────────────────────────────────────────────────────
+
+@app.get("/", tags=["Utils"], summary="API Welcome")
+async def root():
+    """Welcome endpoint with API information"""
+    return {
+        "service": "Banner Maker API with AI Chatbot",
+        "version": "5.0.0",
+        "status": "🟢 Running",
+        "endpoints": {
+            "banner": "/docs#/banner",
+            "chatbot": "/docs#/chatbot",
+            "health": "/health",
+            "docs": "/docs",
+            "redoc": "/redoc"
+        },
+        "quick_links": {
+            "ask_chatbot": "POST /api/chatbot/ask",
+            "stream_answer": "POST /api/chatbot/ask/stream",
+            "chatbot_health": "GET /api/chatbot/health",
+            "test_chatbot": "Open chatbot_test.html in browser"
+        }
+    }
 
 
 # ─── Image Serving (CORS-safe) ────────────────────────────────────────────────
 
-@App.get("/images/{filename}", tags=["Utils"], summary="Serve generated images")
+@app.get("/images/{filename}", tags=["Utils"], summary="Serve generated images")
 async def serve_image(filename: str):
     """
     Serve PNG files from the images directory.
@@ -202,7 +227,7 @@ async def serve_image(filename: str):
 
 # ─── Lifecycle ────────────────────────────────────────────────────────────────
 
-@App.on_event("startup")
+@app.on_event("startup")
 async def startup_event() -> None:
     cleanup_old_images()
     asyncio.create_task(_periodic_cleanup())
@@ -224,7 +249,7 @@ async def startup_event() -> None:
 
 # ─── Health ───────────────────────────────────────────────────────────────────
 
-@App.get("/health", tags=["Utils"], summary="Health check")
+@app.get("/health", tags=["Utils"], summary="Health check")
 async def health():
     return {
         "status":         "ok",

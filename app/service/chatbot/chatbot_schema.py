@@ -23,20 +23,20 @@ class ChatRequest(BaseModel):
         ...,
         min_length=1,
         max_length=2000,
-        description="User's question about the website/platform"
+        description="Your question about the website"
     )
     conversation_history: Optional[List[ChatMessage]] = Field(
         default=None,
-        description="Previous conversation context (optional for multi-turn)"
+        description="Previous conversation context (optional)"
     )
     max_tokens: Optional[int] = Field(
         default=500,
-        description="Maximum tokens in response",
+        description="Max response length",
         le=2000
     )
     temperature: Optional[float] = Field(
         default=0.7,
-        description="Response creativity level (0-1)",
+        description="Response creativity (0-1)",
         ge=0,
         le=1
     )
