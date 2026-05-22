@@ -35,7 +35,7 @@ router = APIRouter(
 )
 async def ask_question(request: ChatRequest | str) -> ChatResponse:
     """
-    Ask a question about the Basione website/platform.
+    Ask a question about the Spandoek website/platform.
     
     **Simple Usage:** Send just a string question
     ```

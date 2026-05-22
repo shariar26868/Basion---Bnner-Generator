@@ -1,12 +1,12 @@
-# Basione Project Documentation
+# Spandoek Project Documentation
 
-> This README contains the full Basione Client and Basione Server documentation for product reference and AI-assisted answers.
+> This README contains the full Spandoek Client and Spandoek Server documentation for product reference and AI-assisted answers.
 
 ---
 
-## Basione Client 🎨✨
+## Spandoek Client 🎨✨
 
-Basione Client is a cutting-edge, AI-powered interactive banner design and e-commerce platform built with Next.js 15, TypeScript, Tailwind CSS v4, and Fabric.js. The platform empowers users to design, customize, and order high-quality physical banners through either an AI-driven layout generator or an advanced manual vector/canvas editor.
+Spandoek Client is a cutting-edge, AI-powered interactive banner design and e-commerce platform built with Next.js 15, TypeScript, Tailwind CSS v4, and Fabric.js. The platform empowers users to design, customize, and order high-quality physical banners through either an AI-driven layout generator or an advanced manual vector/canvas editor.
 
 ### 🌟 Key Features
 
@@ -36,7 +36,7 @@ Basione Client is a cutting-edge, AI-powered interactive banner design and e-com
 ### 🏗️ Technical Architecture & Directory Structure
 
 ```text
-basione-client/
+Spandoek-client/
 ├── 📁 app/                           # Next.js App Router root layout and routing hierarchy
 │   ├── 📁 (adminDashboard)/          # Admin-exclusive management views
 │   ├── 📁 (auth)/                    # Sign-in, sign-up, password reset, and OTP verification flows
@@ -53,15 +53,15 @@ basione-client/
 │   ├── 📁 editor/                    # Interactive elements for the canvas toolbar & menus
 │   └── 📁 auth/                      # Core auth panels
 ├── 📁 providers/                     # React Context and Redux state provider mounts
-│   ├── [CanvasProvider.tsx](file:///c:/Projects/basione-client/providers/CanvasProvider.tsx)     # FabricJS viewport controller & event handler suite
-│   └── [Provider.tsx](file:///c:/Projects/basione-client/redux/Provider.tsx)           # Redux Toolkit global store wrapper
+│   ├── [CanvasProvider.tsx](file:///c:/Projects/Spandoek-client/providers/CanvasProvider.tsx)     # FabricJS viewport controller & event handler suite
+│   └── [Provider.tsx](file:///c:/Projects/Spandoek-client/redux/Provider.tsx)           # Redux Toolkit global store wrapper
 ├── 📁 redux/                         # State Management layer via Redux Toolkit & RTK Query
 │   ├── 📁 api/                       # API Slices (baseApi, authApi, bannerApi, orderApi)
 │   ├── 📁 features/                  # Local synchronous slices (e.g., user slice)
-│   └── [store.ts](file:///c:/Projects/basione-client/redux/store.ts)               # Persisted store configurations
+│   └── [store.ts](file:///c:/Projects/Spandoek-client/redux/store.ts)               # Persisted store configurations
 ├── 📁 lib/                           # Utility scripts and shared helpers
-│   ├── [canvasize.ts](file:///c:/Projects/basione-client/lib/canvasize.ts)           # Dynamic coordinate scaler
-│   └── [utils.ts](file:///c:/Projects/basione-client/lib/utils.ts)               # Base64-to-File converting & tailwind-merge helper
+│   ├── [canvasize.ts](file:///c:/Projects/Spandoek-client/lib/canvasize.ts)           # Dynamic coordinate scaler
+│   └── [utils.ts](file:///c:/Projects/Spandoek-client/lib/utils.ts)               # Base64-to-File converting & tailwind-merge helper
 └── ⚙️ Config files                   # Next.js, PostCSS, Tailwind CSS v4, TypeScript, package.json
 ```
 
@@ -86,8 +86,8 @@ Make sure you have Node.js installed (v18+ recommended) and a package manager li
 #### Installation
 
 ```bash
-git clone https://github.com/Tahsin0909/basione-client.git
-cd basione-client
+git clone https://github.com/Tahsin0909/Spandoek-client.git
+cd Spandoek-client
 npm install
 ```
 
@@ -121,9 +121,9 @@ npm run build
 
 ---
 
-## Basione Server
+## Spandoek Server
 
-Basione Server is a premium, production-ready e-commerce RESTful API backend designed for the Basione banner printing platform.
+Spandoek Server is a premium, production-ready e-commerce RESTful API backend designed for the Spandoek banner printing platform.
 
 The server is built with a state-of-the-art Node.js, Express, TypeScript, Prisma ORM, and MongoDB architecture. It implements dynamic AI banner variant generation, double payment integrations (Stripe + Mollie), asynchronous processing queues (BullMQ), comprehensive admin panel management, a rich content blog system, decoration categories, and a premium unified aggregation layer.
 
@@ -328,13 +328,13 @@ npm run dev
 PORT=5000
 NODE_ENV=development
 
-DATABASE_URL="mongodb+srv://<username>:<password>@cluster.mongodb.net/basione_db"
+DATABASE_URL="mongodb+srv://<username>:<password>@cluster.mongodb.net/Spandoek_db"
 
 JWT_SECRET="JWT_SECRET_SIGNING_KEY"
 JWT_EXPIRES_IN="7d"
 PASSWORD_SALT=10
 
-SMTP_USER="smtp-client@basione.com"
+SMTP_USER="smtp-client@Spandoek.com"
 SMTP_PASS="secure_smtp_password"
 
 STRIPE_SECRET_KEY="sk_test_..."
@@ -348,7 +348,7 @@ CLOUDINARY_API_SECRET="api-secret"
 
 S3_REGION="eu-central-1"
 S3_ENDPOINT="https://s3.eu-central-1.amazonaws.com"
-S3_BUCKET_NAME="basione-storage"
+S3_BUCKET_NAME="Spandoek-storage"
 S3_ACCESS_KEY_ID="AWS_KEY_ID"
 S3_SECRET_ACCESS_KEY="AWS_SECRET_KEY"
 
@@ -383,4 +383,4 @@ vercel --prod
 
 ## Notes
 
-This README is intended as a full product reference for the Basione platform. The current repository code may differ from the planned Node.js/Express server and Next.js client architecture described here.
+This README is intended as a full product reference for the Spandoek platform. The current repository code may differ from the planned Node.js/Express server and Next.js client architecture described here.

@@ -2,7 +2,7 @@
 
 ## ✅ What Has Been Created
 
-Your Basione project now has a **fully-functional AI chatbot system** that can answer any questions about your website!
+Your Spandoek project now has a **fully-functional AI chatbot system** that can answer any questions about your website!
 
 ---
 
@@ -39,7 +39,7 @@ main.py                            # Now includes chatbot router registration
 ```
 ┌─────────────────────────────────────┐
 │      USER ASKS A QUESTION           │
-│  "What features does Basione have?" │
+│  "What features does Spandoek have?" │
 └────────────┬────────────────────────┘
              │
              ▼
@@ -56,7 +56,7 @@ main.py                            # Now includes chatbot router registration
              ▼
 ┌──────────────────────────────────────┐
 │     ANSWER RETURNED TO USER          │
-│ "Basione has: Fabric.js editor,      │
+│ "Spandoek has: Fabric.js editor,      │
 │  AI generation, dynamic pricing, ... │
 │  Confidence: 95% | Sources: Features"│
 └──────────────────────────────────────┘
@@ -90,7 +90,7 @@ file:///path/to/chatbot_test.html
 ```bash
 curl -X POST http://localhost:8000/api/chatbot/ask \
   -H "Content-Type: application/json" \
-  -d '{"question":"What is Basione?"}'
+  -d '{"question":"What is Spandoek?"}'
 ```
 
 **Option C:** Run Python examples
@@ -152,7 +152,7 @@ import requests
 
 response = requests.post(
     'http://localhost:8000/api/chatbot/ask',
-    json={'question': 'What is Basione?'}
+    json={'question': 'What is Spandoek?'}
 )
 print(response.json()['answer'])
 ```
@@ -378,7 +378,7 @@ echo $OPENAI_API_KEY
 
 ## 🎉 You're All Set!
 
-Your Basione platform now has an **intelligent chatbot** that can:
+Your Spandoek platform now has an **intelligent chatbot** that can:
 - ✅ Answer questions about any part of the platform
 - ✅ Provide sources for answers
 - ✅ Remember conversation context

@@ -1,8 +1,8 @@
-# 🤖 Basione Chatbot API Guide
+# 🤖 Spandoek Chatbot API Guide
 
 ## Overview
 
-The Basione Chatbot is an AI-powered system that provides intelligent answers to any questions about the website platform. It has full access to the project documentation and uses OpenAI's GPT models to generate accurate, context-aware responses.
+The Spandoek Chatbot is an AI-powered system that provides intelligent answers to any questions about the website platform. It has full access to the project documentation and uses OpenAI's GPT models to generate accurate, context-aware responses.
 
 ## ✨ Features
 
@@ -23,7 +23,7 @@ Submit a question and get a complete response immediately.
 **Request Body:**
 ```json
 {
-  "question": "What are the main features of the Basione banner editor?",
+  "question": "What are the main features of the Spandoek banner editor?",
   "temperature": 0.7,
   "max_tokens": 500,
   "conversation_history": null
@@ -33,7 +33,7 @@ Submit a question and get a complete response immediately.
 **Response:**
 ```json
 {
-  "answer": "The Basione banner editor is powered by Fabric.js and includes:\n\n1. **Layer Management** - Organize and manage multiple design elements\n2. **Custom Image Uploads** - Add your own images...",
+  "answer": "The Spandoek banner editor is powered by Fabric.js and includes:\n\n1. **Layer Management** - Organize and manage multiple design elements\n2. **Custom Image Uploads** - Add your own images...",
   "sources": ["Advanced Interactive Canvas Editor", "Key Features"],
   "confidence": 0.95,
   "is_streaming": false
@@ -66,7 +66,7 @@ curl -X POST http://localhost:8000/api/chatbot/ask/stream \
 ```
 data: {"type":"metadata","sources":["Installation"]}
 
-data: {"type":"content","data":"To install the Basione project, follow "}
+data: {"type":"content","data":"To install the Spandoek project, follow "}
 
 data: {"type":"content","data":"these steps:\n\n1. Clone the repository"}
 
@@ -87,7 +87,7 @@ Get information about loaded documentation.
     "total_chars": 15234,
     "total_sections": 24,
     "section_names": [
-      "Basione Client",
+      "Spandoek Client",
       "Key Features",
       "Advanced Interactive Canvas Editor",
       "Technology Stack"
@@ -173,7 +173,7 @@ Check if chatbot service is operational.
 - "How does the image generation streaming work?"
 
 ### General Questions
-- "What are the main features of Basione?"
+- "What are the main features of Spandoek?"
 - "How is the project structured?"
 - "What technologies are in the tech stack?"
 - "How do I deploy the application?"
@@ -280,8 +280,8 @@ def ask_with_history(question: str, history: list):
 
 # Usage
 history = [
-    {"role": "user", "content": "What is Basione?"},
-    {"role": "assistant", "content": "Basione is an AI-powered banner design platform..."}
+    {"role": "user", "content": "What is Spandoek?"},
+    {"role": "assistant", "content": "Spandoek is an AI-powered banner design platform..."}
 ]
 
 ask_with_history("Tell me more about the features", history)
@@ -293,7 +293,7 @@ ask_with_history("Tell me more about the features", history)
 # Simple question
 curl -X POST http://localhost:8000/api/chatbot/ask \
   -H "Content-Type: application/json" \
-  -d '{"question":"What is Basione?"}'
+  -d '{"question":"What is Spandoek?"}'
 
 # With options
 curl -X POST http://localhost:8000/api/chatbot/ask \
@@ -379,8 +379,8 @@ Return Response (or Stream)
 request = {
     "question": "Tell me more about the pricing",
     "conversation_history": [
-        {"role": "user", "content": "What features does Basione have?"},
-        {"role": "assistant", "content": "Basione has advanced banner editor, AI generation..."}
+        {"role": "user", "content": "What features does Spandoek have?"},
+        {"role": "assistant", "content": "Spandoek has advanced banner editor, AI generation..."}
     ]
 }
 ```

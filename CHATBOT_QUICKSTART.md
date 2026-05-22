@@ -181,7 +181,7 @@ async function askChatbot(question) {
 }
 
 // Usage
-askChatbot("What is Basione?");
+askChatbot("What is Spandoek?");
 ```
 
 ### Vue.js

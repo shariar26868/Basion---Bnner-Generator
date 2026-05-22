@@ -42,7 +42,7 @@ class ChatbotService:
         Returns:
             System prompt string
         """
-        return f"""You are a helpful AI assistant for the Basione website platform. 
+        return f"""You are a helpful AI assistant for the Spandoek website platform. 
 Your role is to provide accurate, detailed, and visually well-structured answers about the platform based on official documentation.
 
 You have access to the following platform documentation:
@@ -65,7 +65,7 @@ Content Formatting Rules (FOLLOW THESE STRICTLY):
 Example Answer Style:
 <h4>Authentication System</h4>
 Sign-in, sign-up, password reset, and OTP verification flows.
-Located under <b>basione-client/app/auth/</b>.
+Located under <b>spandoek-client/app/auth/</b>.
 
 > ✅ Includes email OTP and password recovery.
 

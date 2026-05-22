@@ -144,7 +144,7 @@ import requests
 
 response = requests.post(
     'http://localhost:8000/api/chatbot/ask',
-    json={'question': 'What is Basione?'}
+    json={'question': 'What is Spandoek?'}
 )
 data = response.json()
 print(f"Answer: {data['answer']}")
@@ -210,7 +210,7 @@ import requests
 # First question
 response1 = requests.post(
     'http://localhost:8000/api/chatbot/ask',
-    json={'question': 'What is Basione?'}
+    json={'question': 'What is Spandoek?'}
 )
 answer1 = response1.json()['answer']
 
@@ -220,7 +220,7 @@ response2 = requests.post(
     json={
         'question': 'Tell me more about the features',
         'conversation_history': [
-            {'role': 'user', 'content': 'What is Basione?'},
+            {'role': 'user', 'content': 'What is Spandoek?'},
             {'role': 'assistant', 'content': answer1}
         ]
     }
@@ -333,7 +333,7 @@ python
 
 >>> import requests
 >>> r = requests.post('http://localhost:8000/api/chatbot/ask', 
-...                   json={'question': 'What is Basione?'})
+...                   json={'question': 'What is Spandoek?'})
 >>> print(r.json()['answer'])
 ```
 

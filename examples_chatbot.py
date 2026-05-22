@@ -1,5 +1,5 @@
 """
-Chatbot API Examples - Quick reference for using the Basione chatbot
+Chatbot API Examples - Quick reference for using the Spandoek chatbot
 
 Run this file with: python examples_chatbot.py
 """
@@ -19,7 +19,7 @@ async def example_1_simple_question():
     
     async with aiohttp.ClientSession() as session:
         payload = {
-            "question": "What are the main technologies used in Basione?",
+            "question": "What are the main technologies used in Spandoek?",
             "temperature": 0.7,
             "max_tokens": 300
         }
@@ -215,7 +215,7 @@ async def example_8_multiple_questions():
     print("="*60)
     
     questions = [
-        "What is Basione?",
+        "What is Spandoek?",
         "What backend technology is used?",
         "How do I start development?",
     ]
@@ -237,7 +237,7 @@ async def main():
     print("\n")
     print("╔" + "="*58 + "╗")
     print("║" + " "*58 + "║")
-    print("║" + "  🤖 Basione Chatbot API - Usage Examples  ".center(58) + "║")
+    print("║" + "  🤖 Spandoek Chatbot API - Usage Examples  ".center(58) + "║")
     print("║" + " "*58 + "║")
     print("╚" + "="*58 + "╝")
     
