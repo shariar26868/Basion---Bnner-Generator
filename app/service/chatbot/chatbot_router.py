@@ -14,8 +14,10 @@ from app.service.chatbot.chatbot_schema import (
 )
 from app.service.chatbot.chatbot_service import get_chatbot_service
 from app.service.chatbot.chatbot_utils import (
+    fetch_aggregate_api_data,
     get_documentation_loader,
-    get_documentation_context
+    get_documentation_context,
+    summarize_aggregate_api_data,
 )
 
 logger = logging.getLogger(__name__)
@@ -190,6 +192,43 @@ async def search_documentation(query: str = Query(..., min_length=1, max_length=
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error searching documentation"
+        )
+
+
+@router.get(
+    "/aggregate",
+    summary="Fetch external aggregate data",
+    description="Fetch current external aggregate data used by the chatbot"
+)
+async def get_aggregate_data(full: bool = Query(False, description="Return raw API payload when true")):
+    try:
+        aggregate_data = await fetch_aggregate_api_data()
+        if aggregate_data is None:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Failed to fetch external aggregate API data"
+            )
+
+        if full:
+            return {
+                "status": "success",
+                "source": "external_aggregate_api",
+                "data": aggregate_data
+            }
+
+        return {
+            "status": "success",
+            "source": "external_aggregate_api",
+            "summary": summarize_aggregate_api_data(aggregate_data)
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching aggregate data: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching aggregate data"
         )
 
 

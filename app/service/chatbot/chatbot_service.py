@@ -15,7 +15,10 @@ from app.service.chatbot.chatbot_schema import (
     ChatMessage, 
     ChatMessageRole
 )
-from app.service.chatbot.chatbot_utils import get_documentation_context
+from app.service.chatbot.chatbot_utils import (
+    get_documentation_context,
+    get_aggregate_api_context,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,23 +36,24 @@ class ChatbotService:
         self.model = "gpt-4-turbo"  # or "gpt-3.5-turbo" for cost optimization
         self.conversation_history = []
         
-    def _build_system_prompt(self, documentation_context: str) -> str:
-        """Build system prompt with documentation context
-        
-        Args:
-            documentation_context: Relevant documentation text
-            
-        Returns:
-            System prompt string
-        """
-        return f"""You are a helpful AI assistant for the Spandoek website platform. 
-Your role is to provide accurate, detailed, and visually well-structured answers about the platform based on official documentation.
+    def _build_system_prompt(
+        self,
+        documentation_context: str,
+        external_context: Optional[str] = None
+    ) -> str:
+        """Build system prompt with documentation and external API context."""
+        external_section = ""
+        if external_context:
+            external_section = f"\n\nYou also have access to aggregated live data from the external Spandoek API:\n\n<external_data>\n{external_context}\n</external_data>\n"
+
+        return f"""You are a helpful AI assistant for the Spandoek website platform.
+Your role is to provide accurate, detailed, and visually well-structured answers about the platform based on official documentation and live aggregated data.
 
 You have access to the following platform documentation:
 
 <documentation>
 {documentation_context}
-</documentation>
+</documentation>{external_section}
 
 Content Formatting Rules (FOLLOW THESE STRICTLY):
 1. Start with a brief 1-2 sentence overview of the answer.
@@ -69,7 +73,7 @@ Located under <b>spandoek-client/app/auth/</b>.
 
 > ✅ Includes email OTP and password recovery.
 
-Remember: Be friendly, professional, and concise. Base your answers ONLY on the provided documentation. If information is not in the documentation, clearly state that."""
+Remember: Be friendly, professional, and concise. Base your answers ONLY on the provided documentation and external aggregate data when it is available. If information is not in the documentation or external data, clearly state that."""
 
     async def ask_question(self, request: ChatRequest) -> ChatResponse:
         """Process a user question and generate response
@@ -81,35 +85,37 @@ Remember: Be friendly, professional, and concise. Base your answers ONLY on the 
             ChatResponse with answer and metadata
         """
         try:
-            # Get relevant documentation context
+            # Get relevant documentation and external API context
             doc_context, relevant_sections = get_documentation_context(
                 request.question,
                 max_chars=3000
             )
-            
-            if not doc_context:
+            external_context = await get_aggregate_api_context()
+
+            if not doc_context and not external_context:
                 return ChatResponse(
-                    answer="I don't have documentation loaded. Please try again later.",
+                    answer="I don't have documentation or external data loaded. Please try again later.",
                     sources=[],
                     confidence=0.0
                 )
-            
+
             # Build messages for API call
             messages = []
-            
-            # Add current question
             messages.append({
                 "role": "user",
                 "content": request.question
             })
-            
+
             # Call OpenAI API
             response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {
                         "role": "system",
-                        "content": self._build_system_prompt(doc_context)
+                        "content": self._build_system_prompt(
+                            doc_context,
+                            external_context
+                        )
                     },
                     *messages
                 ],
@@ -119,13 +125,16 @@ Remember: Be friendly, professional, and concise. Base your answers ONLY on the 
             )
             
             answer = response.choices[0].message.content
-            
+
             # Calculate confidence (simple heuristic)
-            confidence = 0.95 if relevant_sections else 0.7
-            
+            confidence = 0.95 if relevant_sections or external_context else 0.7
+            sources = list(relevant_sections)
+            if external_context:
+                sources.append("external_api")
+
             return ChatResponse(
                 answer=answer,
-                sources=relevant_sections,
+                sources=sources,
                 confidence=confidence,
                 is_streaming=False
             )
@@ -151,34 +160,37 @@ Remember: Be friendly, professional, and concise. Base your answers ONLY on the 
             Streaming response chunks
         """
         try:
-            # Get relevant documentation context
+            # Get relevant documentation and external API context
             doc_context, relevant_sections = get_documentation_context(
                 request.question,
                 max_chars=3000
             )
-            
-            if not doc_context:
+            external_context = await get_aggregate_api_context()
+
+            if not doc_context and not external_context:
                 yield json.dumps({
                     "type": "error",
-                    "content": "Documentation not loaded"
+                    "content": "Documentation and external data not loaded"
                 })
                 return
-            
+
             # Build messages
             messages = []
-            
             messages.append({
                 "role": "user",
                 "content": request.question
             })
-            
+
             # Stream response
             async with await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {
                         "role": "system",
-                        "content": self._build_system_prompt(doc_context)
+                        "content": self._build_system_prompt(
+                            doc_context,
+                            external_context
+                        )
                     },
                     *messages
                 ],
@@ -187,9 +199,13 @@ Remember: Be friendly, professional, and concise. Base your answers ONLY on the 
                 stream=True
             ) as stream:
                 # Send metadata first
+                metadata_sources = list(relevant_sections)
+                if external_context:
+                    metadata_sources.append("external_api")
+
                 yield json.dumps({
                     "type": "metadata",
-                    "sources": relevant_sections
+                    "sources": metadata_sources
                 }) + "\n"
                 
                 # Stream content

@@ -6,10 +6,23 @@ import os
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 
+import httpx
+
 logger = logging.getLogger(__name__)
+
+AGGREGATE_API_URL = os.getenv(
+    "AGGREGATE_API_URL",
+    "https://api.spandoekprint.nl/api/v1/aggregate"
+)
+AGGREGATE_API_TTL_SECONDS = int(os.getenv("AGGREGATE_API_TTL_SECONDS", "300"))
+
+_external_api_cache = {
+    "timestamp": None,
+    "data": None,
+}
 
 
 class DocumentationLoader:
@@ -197,3 +210,90 @@ def get_documentation_context(query: str, max_chars: int = 4000) -> tuple[str, L
     if not loader.raw_content:
         loader.load_documentation()
     return loader.get_relevant_context(query, max_chars)
+
+
+async def fetch_aggregate_api_data(
+    api_url: str = AGGREGATE_API_URL,
+    timeout: int = 10
+) -> Optional[dict]:
+    """Fetch aggregate application data from the external API.
+
+    Returns cached data if fetched recently.
+    """
+    now = datetime.utcnow()
+    cached_data = _external_api_cache.get("data")
+    cached_ts = _external_api_cache.get("timestamp")
+
+    if cached_data and cached_ts and isinstance(cached_ts, datetime):
+        if now - cached_ts < timedelta(seconds=AGGREGATE_API_TTL_SECONDS):
+            logger.info("Using cached aggregate API data")
+            return cached_data
+
+    try:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(timeout)) as client:
+            response = await client.get(api_url)
+            response.raise_for_status()
+            payload = response.json()
+
+        _external_api_cache["timestamp"] = now
+        _external_api_cache["data"] = payload
+        logger.info("Fetched aggregate API data from %s", api_url)
+        return payload
+
+    except Exception as e:
+        logger.error("Failed to fetch aggregate API data: %s", e)
+        return None
+
+
+def summarize_aggregate_api_data(data: Optional[dict]) -> str:
+    """Build a compact summary string for aggregate API data."""
+    if not data or not isinstance(data, dict):
+        return ""
+
+    summary_lines = []
+    meta = data.get("data") if isinstance(data.get("data"), dict) else {}
+
+    status_code = data.get("statusCode")
+    success_flag = data.get("success")
+    if status_code is not None:
+        summary_lines.append(
+            f"Aggregate API status: {status_code} (success={success_flag})"
+        )
+
+    if isinstance(meta, dict):
+        for key in [
+            "banners",
+            "templates",
+            "blogs",
+            "decorations",
+            "decorationCategories",
+            "faqs",
+            "users",
+        ]:
+            value = meta.get(key)
+            if isinstance(value, list):
+                summary_lines.append(f"- {key}: {len(value)} items")
+
+        sample_banner = None
+        if isinstance(meta.get("banners"), list) and meta["banners"]:
+            sample_banner = meta["banners"][0]
+
+        if sample_banner:
+            summary_lines.append(
+                f"- Sample banner: headline={sample_banner.get('headline')} | "
+                f"style={sample_banner.get('style')} | "
+                f"size={sample_banner.get('sizeLabel')} | "
+                f"price={sample_banner.get('price')}"
+            )
+
+    summary_lines.append("This external data may change over time.")
+    return "\n".join(summary_lines)
+
+
+async def get_aggregate_api_context(max_chars: int = 2000) -> str:
+    """Return a short text summary of the aggregate API data."""
+    api_data = await fetch_aggregate_api_data()
+    summary = summarize_aggregate_api_data(api_data)
+    if not summary:
+        return ""
+    return summary[:max_chars]
